@@ -1,0 +1,54 @@
+Portada
+Tabla de contenido
+Lista de figuras y tablas si aplica
+1.Introducción
+2.Necesidad y problema del proyecto
+2.1Descripción del problema
+2.2Contexto del problema
+2.3Población afectada
+2.4Justificación de la solución tecnológica
+3.Objetivos del proyecto
+3.1Objetivo general
+3.2Objetivos específicos
+4.Alcance del proyecto
+4.1Alcance funcional del sistema
+4.2Qué incluirá el proyecto
+4.3Aspectos fuera del alcance
+4.4Beneficios esperados del sistema
+5.Metodología de desarrollo
+5.1Descripción general de Scrum
+5.2Roles del equipo de trabajo
+5.3Organización del trabajo mediante Sprints
+5.4Herramientas de gestión del proyecto
+6.Requisitos del sistema
+6.1Requisitos funcionales
+6.2Requisitos no funcionales
+7.Identificación de stakeholders y usuarios finales
+7.1Stakeholders
+7.2Usuarios finales
+8.Historias de usuario mín. 5
+9.Flujos de solución
+9.1Diagramas de flujo del sistema
+9.2Flujos de interacción del usuario
+10.Solución tecnológica a implementar
+10.1Descripción del sistema
+10.2Arquitectura general de la solución
+10.3Tecnologías que se utilizarán
+10.4Beneficios esperados
+11.Modelamiento del sistema (los que apliquen)
+11.1Diagramas estructurales
+11.1.1Diagrama de clases
+11.1.2Diagrama de componentes
+11.2Diagramas de comportamiento
+11.2.1Diagrama de casos de uso
+11.2.2Diagrama de secuencia
+11.2.3Diagrama de actividades
+11.3Modelamiento de base de datos (según la base de datos que escojan)
+SQL
+11.3.1Diagrama entidad–relación (ER)
+11.3.2Modelo Relacional
+No SQL
+11.3.1Diagrama de Arquitectura
+Conclusiones
+Referencias
+Anexos (si aplica)
