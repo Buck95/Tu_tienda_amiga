@@ -1,19 +1,38 @@
 import pool from '../db.js';
 
 export const crearPedido = async (req, res) => {
-  const { usuario_id, productos } = req.body;
+  try {
+    const { carrito, total } = req.body;
 
-  const pedido = await pool.query(
-    'INSERT INTO pedidos (usuario_id, estado) VALUES ($1,$2) RETURNING *',
-    [usuario_id, 'pendiente']
-  );
-
-  for (let p of productos) {
-    await pool.query(
-      'INSERT INTO detalle_pedidos (pedido_id, producto_id, cantidad, precio_unitario) VALUES ($1,$2,$3,$4)',
-      [pedido.rows[0].id, p.id, 1, p.precio]
+    const pedido = await pool.query(
+      'INSERT INTO pedidos (usuario_id, total) VALUES ($1,$2) RETURNING *',
+      [1, total]
     );
-  }
 
-  res.json({ msg: 'Pedido creado' });
+    const pedido_id = pedido.rows[0].id;
+
+    for (let item of carrito) {
+      await pool.query(
+        `INSERT INTO detalle_pedido (pedido_id, producto_id, cantidad, precio)
+         VALUES ($1,$2,$3,$4)`,
+        [pedido_id, item.id, item.cantidad, item.precio]
+      );
+    }
+
+    res.json({ message: "Pedido guardado" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error creando pedido" });
+  }
+};
+
+export const obtenerVentas = async (req, res) => {
+  const result = await pool.query(`
+    SELECT p.id, p.total, p.fecha
+    FROM pedidos p
+    ORDER BY p.fecha DESC
+  `);
+
+  res.json(result.rows);
 };
