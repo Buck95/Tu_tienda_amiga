@@ -3,12 +3,13 @@ body {
   font-family: Arial;
 }
 
+/* NAVBAR */
 .navbar {
   display: flex;
   justify-content: space-between;
   background: #131921;
   color: white;
-  padding: 10px;
+  padding: 15px;
   align-items: center;
 }
 
@@ -17,11 +18,13 @@ body {
   padding: 5px;
 }
 
+/* LAYOUT */
 .layout {
   display: flex;
 }
 
-.grid {
+/* PRODUCTOS */
+.productos {
   width: 70%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -33,15 +36,40 @@ body {
   border: 1px solid #ddd;
   padding: 10px;
   border-radius: 10px;
+  text-align: center;
 }
 
+/* CARRITO */
 .carrito {
   width: 30%;
   background: #f4f4f4;
   padding: 20px;
 }
 
-.item {
+/* ADMIN */
+.admin-container {
+  padding: 20px;
+}
+
+.admin-navbar {
   display: flex;
   justify-content: space-between;
+  background: #222;
+  color: white;
+  padding: 10px;
+}
+
+.admin-content {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.admin-form, .admin-list {
+  width: 50%;
+}
+
+#root {
+  max-width: 1200px;
+  margin: auto;
 }

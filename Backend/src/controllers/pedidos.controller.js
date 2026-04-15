@@ -1,5 +1,6 @@
 import pool from '../db.js';
 
+// CREAR PEDIDO
 export const crearPedido = async (req, res) => {
   try {
     const { carrito, total } = req.body;
@@ -22,17 +23,22 @@ export const crearPedido = async (req, res) => {
     res.json({ message: "Pedido guardado" });
 
   } catch (error) {
-    console.error(error);
+    console.error("ERROR PEDIDO:", error);
     res.status(500).json({ error: "Error creando pedido" });
   }
 };
 
+// 🔥 ESTA ES LA IMPORTANTE (NO ROMPE)
 export const obtenerVentas = async (req, res) => {
-  const result = await pool.query(`
-    SELECT p.id, p.total, p.fecha
-    FROM pedidos p
-    ORDER BY p.fecha DESC
-  `);
+  try {
+    const result = await pool.query(`
+      SELECT * FROM pedidos ORDER BY id DESC
+    `);
 
-  res.json(result.rows);
+    res.json(result.rows);
+
+  } catch (error) {
+    console.error("ERROR VENTAS:", error);
+    res.json([]); // 🔥 evita que se caiga todo
+  }
 };

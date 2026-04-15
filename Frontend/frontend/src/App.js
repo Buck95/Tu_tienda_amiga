@@ -11,7 +11,9 @@ function App() {
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   useEffect(() => {
-    if (usuario) obtenerProductos();
+    if (usuario && usuario.rol !== "admin") {
+      obtenerProductos();
+    }
   }, []);
 
   const obtenerProductos = async () => {
@@ -40,57 +42,74 @@ function App() {
     0
   );
 
-  const comprar = async () => {
-    await axios.post('http://localhost:3000/api/pedidos', {
-      carrito,
-      total
-    });
-
-    alert("Compra realizada 🛒");
-    setCarrito([]);
-  };
-
   const logout = () => {
     localStorage.clear();
     window.location.reload();
   };
 
+  const comprar = async () => {
+    try {
+      await axios.post('http://localhost:3000/api/pedidos', {
+        carrito,
+        total
+      });
+
+      alert("Compra realizada 🛒");
+      setCarrito([]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // 🔴 SIN LOGIN
   if (!usuario) return <Login />;
 
-  if (usuario.email === "admin@gmail.com") return <Admin />;
+  // 🔴 ADMIN
+  if (usuario.rol === "admin") return <Admin />;
 
+  // 🟢 USUARIO NORMAL
   return (
-    <div className="layout">
+    <div>
 
-      <div className="productos">
-        {productos.map(p => (
-          <div className="card" key={p.id}>
-            {p.imagen && (
-              <img src={`http://localhost:3000/uploads/${p.imagen}`} width="100" />
-            )}
-            <h3>{p.nombre}</h3>
-            <p>${p.precio}</p>
-            <button onClick={() => agregarAlCarrito(p)}>Agregar</button>
-          </div>
-        ))}
+      <div className="navbar">
+        <h2>Tu Tienda Amiga 🛒</h2>
+        <div>
+          <span>Hola, {usuario.nombre} 👋</span>
+          <button onClick={logout}>Salir</button>
+        </div>
       </div>
 
-      <div className="carrito">
-        <h2>Carrito</h2>
+      <div className="layout">
 
-        {carrito.map(p => (
-          <div key={p.id}>
-            {p.nombre} x{p.cantidad}
-            <button onClick={() => eliminarProducto(p.id)}>❌</button>
-          </div>
-        ))}
+        <div className="productos">
+          {productos.map(p => (
+            <div className="card" key={p.id}>
+              {p.imagen && (
+                <img src={`http://localhost:3000/uploads/${p.imagen}`} width="100" />
+              )}
+              <h3>{p.nombre}</h3>
+              <p>${p.precio}</p>
+              <button onClick={() => agregarAlCarrito(p)}>Agregar</button>
+            </div>
+          ))}
+        </div>
 
-        <h3>Total: ${total}</h3>
+        <div className="carrito">
+          <h2>Carrito</h2>
 
-        <button onClick={comprar}>Comprar</button>
-        <button onClick={logout}>Salir</button>
+          {carrito.map(p => (
+            <div key={p.id}>
+              {p.nombre} x{p.cantidad}
+              <button onClick={() => eliminarProducto(p.id)}>❌</button>
+            </div>
+          ))}
+
+          <h3>Total: ${total}</h3>
+
+          <button onClick={comprar}>Comprar</button>
+        </div>
+
       </div>
-
     </div>
   );
 }
