@@ -87,17 +87,6 @@ script.sql
 
 ---
 
-# 🔐 Usuario administrador (opcional)
-
-Puedes crear un usuario admin desde PostgreSQL:
-
-```sql
-INSERT INTO usuarios (nombre, email, contraseña, rol)
-VALUES ('Admin', 'admin@gmail.com', '123456', 'admin');
-```
-
----
-
 # ▶️ Ejecución del Backend
 
 1. Entrar a la carpeta:
