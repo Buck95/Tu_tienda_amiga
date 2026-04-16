@@ -5,8 +5,10 @@ import Admin from './Admin';
 import './App.css';
 
 function App() {
+
   const [productos, setProductos] = useState([]);
   const [carrito, setCarrito] = useState([]);
+  const [mensajeCompra, setMensajeCompra] = useState(false);
 
   const usuario = JSON.parse(localStorage.getItem("usuario"));
 
@@ -26,7 +28,9 @@ function App() {
 
     if (existe) {
       setCarrito(carrito.map(p =>
-        p.id === producto.id ? { ...p, cantidad: p.cantidad + 1 } : p
+        p.id === producto.id
+          ? { ...p, cantidad: p.cantidad + 1 }
+          : p
       ));
     } else {
       setCarrito([...carrito, { ...producto, cantidad: 1 }]);
@@ -42,29 +46,43 @@ function App() {
     0
   );
 
+ const comprar = async () => {
+  if (carrito.length === 0) {
+    alert("El carrito está vacío 🛒");
+    return;
+  }
+
+  try {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+    await axios.post('http://localhost:3000/api/pedidos', {
+      carrito,
+      total,
+      usuario_id: usuario.id
+    });
+
+    setMensajeCompra(true);
+    setCarrito([]);
+
+    setTimeout(() => {
+      setMensajeCompra(false);
+    }, 2500);
+
+  } catch (error) {
+    console.error(error);
+    alert("Error al procesar compra 🚨");
+  }
+};
+
   const logout = () => {
     localStorage.clear();
     window.location.reload();
   };
 
-  const comprar = async () => {
-    try {
-      await axios.post('http://localhost:3000/api/pedidos', {
-        carrito,
-        total
-      });
-
-      alert("Compra realizada 🛒");
-      setCarrito([]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // 🔴 SIN LOGIN
+  // 🔴 SI NO HAY LOGIN
   if (!usuario) return <Login />;
 
-  // 🔴 ADMIN
+  // 🔴 SI ES ADMIN
   if (usuario.rol === "admin") return <Admin />;
 
   // 🟢 USUARIO NORMAL
@@ -73,6 +91,7 @@ function App() {
 
       <div className="navbar">
         <h2>Tu Tienda Amiga 🛒</h2>
+
         <div>
           <span>Hola, {usuario.nombre} 👋</span>
           <button onClick={logout}>Salir</button>
@@ -84,12 +103,21 @@ function App() {
         <div className="productos">
           {productos.map(p => (
             <div className="card" key={p.id}>
+
               {p.imagen && (
-                <img src={`http://localhost:3000/uploads/${p.imagen}`} width="100" />
+                <img
+                  src={`http://localhost:3000/uploads/${p.imagen}`}
+                  width="100"
+                  alt="producto"
+                />
               )}
+
               <h3>{p.nombre}</h3>
               <p>${p.precio}</p>
-              <button onClick={() => agregarAlCarrito(p)}>Agregar</button>
+
+              <button onClick={() => agregarAlCarrito(p)}>
+                Agregar
+              </button>
             </div>
           ))}
         </div>
@@ -110,6 +138,15 @@ function App() {
         </div>
 
       </div>
+
+      {/* 🎉 MENSAJE BONITO */}
+      {mensajeCompra && (
+        <div className="mensaje-compra">
+          <h2>🎉 ¡Gracias por tu compra!</h2>
+          <p>Tu pedido ha sido procesado correctamente</p>
+        </div>
+      )}
+
     </div>
   );
 }

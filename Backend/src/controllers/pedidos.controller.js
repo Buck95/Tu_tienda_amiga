@@ -7,7 +7,7 @@ export const crearPedido = async (req, res) => {
 
     const pedido = await pool.query(
       'INSERT INTO pedidos (usuario_id, total) VALUES ($1,$2) RETURNING *',
-      [1, total]
+      [req.body.usuario_id, total]
     );
 
     const pedido_id = pedido.rows[0].id;
