@@ -1,4 +1,4 @@
-# 🛒 Tu Tienda Amiga
+# 🛒 Tu Tienda Amiga 🛒
 
 Sistema web de comercio electrónico desarrollado con arquitectura cliente-servidor, que permite a los usuarios explorar productos, agregarlos a un carrito y realizar compras, mientras que un administrador puede gestionar productos y visualizar ventas.
 
