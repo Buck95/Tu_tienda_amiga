@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function Login({ theme, toggleTheme }) {
+function AdminLogin({ theme, toggleTheme }) {
   const [email, setEmail] = useState('');
   const [contraseña, setContraseña] = useState('');
   
-  // Nuevo estado para saber si estamos en Login o Registro
   const [isRegistering, setIsRegistering] = useState(false);
   const [nombre, setNombre] = useState('');
+  const [secretKey, setSecretKey] = useState('');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme || localStorage.getItem('theme') || 'light');
-    console.log("💡 Tip para desarrolladores: La ruta de acceso admin es http://localhost:3001/admin-login");
   }, [theme]);
 
   const handleLogin = async () => {
@@ -21,35 +20,40 @@ function Login({ theme, toggleTheme }) {
         contraseña
       });
 
+      // Verificamos si es admin
+      if (res.data.usuario.rol !== 'admin') {
+        alert("Acceso denegado: No tienes permisos de administrador.");
+        return;
+      }
+
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("usuario", JSON.stringify(res.data.usuario));
 
-      window.location.reload();
+      window.location.href = '/';
 
     } catch (error) {
       console.log(error.response?.data);
-      alert(error.response?.data?.message || "Error en login");
+      alert(error.response?.data?.message || "Error en login de administrador");
     }
   };
 
   const handleRegister = async () => {
     try {
-      // El backend requiere nombre, email, contraseña y un rol (por defecto 'cliente')
-      await axios.post('http://localhost:3000/api/auth/register', {
+      await axios.post('http://localhost:3000/api/auth/register-admin', {
         nombre,
         email,
         contraseña,
-        rol: 'cliente'
+        secretKey
       });
 
-      alert("¡Registro exitoso! Ya puedes iniciar sesión.");
-      // Limpiar campos y volver al login
+      alert("¡Administrador registrado con éxito! Ya puedes iniciar sesión.");
       setIsRegistering(false);
       setContraseña('');
+      setSecretKey('');
 
     } catch (error) {
       console.log(error.response?.data);
-      alert(error.response?.data?.error || "Error al registrarse");
+      alert(error.response?.data?.error || "Error al registrar administrador");
     }
   };
 
@@ -57,17 +61,9 @@ function Login({ theme, toggleTheme }) {
     <>
       <div className="navbar">
         <div style={{display: 'flex', alignItems: 'center'}}>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#navCart)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <defs>
-              <linearGradient id="navCart" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="var(--accent-color)" />
-                <stop offset="100%" stopColor="#ec4899" />
-              </linearGradient>
-            </defs>
-            <circle cx="9" cy="21" r="1"></circle>
-            <circle cx="20" cy="21" r="1"></circle>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-          </svg>
+          <h2 style={{ margin: 0, background: 'var(--gradient-primary)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
+            Panel de Control
+          </h2>
         </div>
         <div className="nav-right">
           <button className="theme-toggle" onClick={toggleTheme} style={{display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-primary)'}}>
@@ -81,8 +77,8 @@ function Login({ theme, toggleTheme }) {
       </div>
       
       <div className="center-container">
-        <div className="login-card glass-panel">
-          <h2>{isRegistering ? 'Crea tu cuenta' : 'Bienvenido'}</h2>
+        <div className="login-card glass-panel" style={{ borderTop: '4px solid #ec4899' }}>
+          <h2>{isRegistering ? 'Nuevo Administrador' : 'Acceso Admin'}</h2>
 
           {isRegistering && (
             <input
@@ -105,21 +101,34 @@ function Login({ theme, toggleTheme }) {
             onChange={(e) => setContraseña(e.target.value)}
           />
 
+          {isRegistering && (
+            <input
+              type="password"
+              placeholder="Clave Secreta de Admin"
+              value={secretKey}
+              onChange={(e) => setSecretKey(e.target.value)}
+            />
+          )}
+
           {isRegistering ? (
-            <button onClick={handleRegister}>Crear cuenta</button>
+            <button onClick={handleRegister}>Registrar Administrador</button>
           ) : (
-            <button onClick={handleLogin}>Ingresar</button>
+            <button onClick={handleLogin}>Ingresar al Panel</button>
           )}
 
           <p 
             onClick={() => setIsRegistering(!isRegistering)} 
-            style={{ marginTop: '25px', cursor: 'pointer', color: 'var(--accent-color)', fontWeight: 'bold' }}
+            style={{ marginTop: '15px', cursor: 'pointer', color: 'var(--text-secondary)' }}
           >
             {isRegistering 
-              ? '¿Ya tienes una cuenta? Inicia sesión aquí' 
-              : '¿No tienes cuenta? Regístrate aquí'
+              ? '¿Ya tienes una cuenta? Inicia sesión' 
+              : '¿No tienes cuenta? Regístrate como Admin'
             }
           </p>
+
+          <a href="/" style={{ display: 'block', marginTop: '15px', color: 'var(--text-secondary)', textDecoration: 'none' }}>
+            ← Volver a la Tienda
+          </a>
 
         </div>
       </div>
@@ -127,4 +136,4 @@ function Login({ theme, toggleTheme }) {
   );
 }
 
-export default Login;
+export default AdminLogin;
