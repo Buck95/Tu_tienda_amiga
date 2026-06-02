@@ -122,7 +122,7 @@ http://localhost:3000
 2. Entrar a la carpeta:
 
 ```
-cd Frontend
+cd Frontend/frontend 
 ```
 
 3. Instalar dependencias:
@@ -160,6 +160,7 @@ http://localhost:3001
 * Crear productos (con imagen)
 * Visualizar lista de productos
 * Ver historial de ventas
+* Para inciar sesion como administrador usar esta URL: http://localhost:3001/admin-login esta de igual forma se encuentra en el debug/console de la pagina
 
 ---
 
