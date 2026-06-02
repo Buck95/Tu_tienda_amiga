@@ -28,17 +28,77 @@ export const crearPedido = async (req, res) => {
   }
 };
 
-// 🔥 ESTA ES LA IMPORTANTE (NO ROMPE)
+// OBTENER VENTAS CON DETALLE
 export const obtenerVentas = async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT * FROM pedidos ORDER BY id DESC
+      SELECT 
+        p.id,
+        p.total,
+        p.fecha,
+        u.nombre as cliente,
+        u.email as cliente_email
+      FROM pedidos p
+      LEFT JOIN usuarios u ON p.usuario_id = u.id
+      ORDER BY p.id DESC
+      LIMIT 50
     `);
 
     res.json(result.rows);
 
   } catch (error) {
     console.error("ERROR VENTAS:", error);
-    res.json([]); // 🔥 evita que se caiga todo
+    res.json([]);
+  }
+};
+
+// OBTENER DETALLE DE UN PEDIDO
+export const obtenerDetallePedido = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(`
+      SELECT 
+        dp.cantidad,
+        dp.precio,
+        pr.nombre as producto
+      FROM detalle_pedido dp
+      LEFT JOIN productos pr ON dp.producto_id = pr.id
+      WHERE dp.pedido_id = $1
+    `, [id]);
+
+    res.json(result.rows);
+
+  } catch (error) {
+    console.error("ERROR DETALLE PEDIDO:", error);
+    res.json([]);
+  }
+};
+
+// ESTADISTICAS BASICAS
+export const obtenerEstadisticas = async (req, res) => {
+  try {
+    const totalVentas = await pool.query('SELECT COALESCE(SUM(total), 0) as total FROM pedidos');
+    const totalPedidos = await pool.query('SELECT COUNT(*) as total FROM pedidos');
+    const totalProductos = await pool.query('SELECT COUNT(*) as total FROM productos');
+    const stockBajo = await pool.query('SELECT COUNT(*) as total FROM productos WHERE stock <= 5 AND stock > 0');
+    const sinStock = await pool.query('SELECT COUNT(*) as total FROM productos WHERE stock = 0');
+
+    res.json({
+      totalVentas: totalVentas.rows[0].total,
+      totalPedidos: totalPedidos.rows[0].total,
+      totalProductos: totalProductos.rows[0].total,
+      stockBajo: stockBajo.rows[0].total,
+      sinStock: sinStock.rows[0].total
+    });
+
+  } catch (error) {
+    console.error("ERROR ESTADISTICAS:", error);
+    res.json({
+      totalVentas: 0,
+      totalPedidos: 0,
+      totalProductos: 0,
+      stockBajo: 0,
+      sinStock: 0
+    });
   }
 };

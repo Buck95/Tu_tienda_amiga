@@ -12,7 +12,7 @@ export const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(contraseña, 10);
 
     await pool.query(
-      'INSERT INTO usuarios (nombre, email, contraseña, rol) VALUES ($1, $2, $3, $4)',
+      'INSERT INTO usuarios (nombre, email, "contraseña", rol) VALUES ($1, $2, $3, $4)',
       [nombre, email, hashedPassword, rol]
     );
 
@@ -20,7 +20,38 @@ export const register = async (req, res) => {
 
   } catch (error) {
     console.error(error);
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'El correo electrónico ya está registrado.' });
+    }
     res.status(500).json({ error: 'Error en registro' });
+  }
+};
+
+// ADMIN REGISTER
+export const registerAdmin = async (req, res) => {
+  try {
+    const { nombre, email, contraseña, secretKey } = req.body;
+
+    // Simple secret key validation for admin creation
+    if (secretKey !== 'admin123') {
+      return res.status(403).json({ error: 'Clave secreta incorrecta para registro de admin' });
+    }
+
+    const hashedPassword = await bcrypt.hash(contraseña, 10);
+
+    await pool.query(
+      'INSERT INTO usuarios (nombre, email, "contraseña", rol) VALUES ($1, $2, $3, $4)',
+      [nombre, email, hashedPassword, 'admin']
+    );
+
+    res.json({ message: 'Administrador registrado correctamente' });
+
+  } catch (error) {
+    console.error(error);
+    if (error.code === '23505') {
+      return res.status(400).json({ error: 'El correo electrónico ya está registrado.' });
+    }
+    res.status(500).json({ error: 'Error en registro de admin' });
   }
 };
 
@@ -42,7 +73,7 @@ export const login = async (req, res) => {
 
     const validPassword = await bcrypt.compare(
       contraseña,
-      user.contraseña
+      user['contraseña'] || user.contraseña
     );
 
     if (!validPassword) {
