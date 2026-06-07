@@ -4,8 +4,6 @@
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.15.0",
     "react": "^19.2.5",
@@ -16,7 +14,12 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest --runInBand --forceExit --silent",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --runInBand --forceExit --silent",
+    "start:e2e": "cross-env PORT=3001 BROWSER=none react-scripts start",
+    "e2e": "playwright test",
+    "e2e:report": "playwright show-report",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -36,5 +39,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "axios-mock-adapter": "^2.1.0",
+    "cross-env": "^10.1.0",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^27.5.1",
+    "jest-mock-extended": "^4.0.1"
   }
 }
